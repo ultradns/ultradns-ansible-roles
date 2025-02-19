@@ -1,0 +1,6 @@
+---
+xrr_base_dir: "~/xrr_records"  # Base directory for XRR containers
+records: []  # List of records to create
+expire_in: ""  # Expiration time (e.g., "2h", "5d", "1w")
+vault_file: ""  # Path to UltraDNS vault file
+vault_pass_file: ""  # Path to vault password file

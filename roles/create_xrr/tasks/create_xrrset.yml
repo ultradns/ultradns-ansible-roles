@@ -1,0 +1,23 @@
+---
+- name: Ensure base directory exists
+  ansible.builtin.file:
+    path: "{{ xrr_base_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create directory for container
+  ansible.builtin.file:
+    path: "{{ xrr_base_dir }}/{{ container_id }}"
+    state: directory
+    mode: '0755'
+
+- name: Create resource records in UltraDNS
+  ultradns.ultradns.record:
+    zone: "{{ item.zone }}"
+    name: "{{ item.name }}"
+    type: "{{ item.type }}"
+    data: "{{ item.data }}"
+    ttl: "{{ item.ttl | default(300) }}"
+    state: present
+    provider: "{{ ultra_provider }}"
+  loop: "{{ records }}"

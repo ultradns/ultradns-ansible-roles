@@ -1,0 +1,16 @@
+---
+- name: Add records for zone {{ zone }}
+  ultradns.ultradns.record:
+    zone: "{{ zone }}"
+    name: "{{ item.name }}"
+    type: "{{ item.type }}"
+    data: "{{ item.data }}"
+    ttl: "{{ item.ttl | default(300) }}"
+    solo: "{{ item.solo | default(false) }}"
+    state: present
+    provider: "{{ ultra_provider }}"
+  loop: "{{ records }}"
+  loop_control:
+    loop_var: item
+  register: dns_record_result
+  ignore_errors: yes

@@ -1,0 +1,40 @@
+---
+- name: Check if xrr-cleanup container is running
+  ansible.builtin.command:
+    cmd: "docker ps --filter 'name=xrr-cleanup' --filter 'status=running' --format '{{ '{{' }}.Names{{ '}}' }}'"
+  register: xrr_cleanup_status
+  changed_when: false
+
+- name: Debug xrr-cleanup container status
+  ansible.builtin.debug:
+    msg: "xrr-cleanup is running: {{ xrr_cleanup_status.stdout }}"
+
+- name: Ensure xrr-cleanup directory exists
+  ansible.builtin.file:
+    path: "{{ xrr_base_dir }}/xrr-cleanup"
+    state: directory
+    mode: '0755'
+
+- name: Copy xrr-cleanup Dockerfile
+  ansible.builtin.copy:
+    src: "xrr_cleanup/Dockerfile"
+    dest: "{{ xrr_base_dir }}/xrr-cleanup/Dockerfile"
+    mode: '0644'
+
+- name: Copy xrr-cleanup entrypoint script
+  ansible.builtin.copy:
+    src: "xrr_cleanup/entrypoint.sh"
+    dest: "{{ xrr_base_dir }}/xrr-cleanup/entrypoint.sh"
+    mode: '0755'
+
+- name: Copy xrr-cleanup docker-compose.yml
+  ansible.builtin.copy:
+    src: "xrr_cleanup/docker-compose.yml"
+    dest: "{{ xrr_base_dir }}/xrr-cleanup/docker-compose.yml"
+    mode: '0644'
+
+- name: Start xrr-cleanup container if not running
+  ansible.builtin.command:
+    cmd: "docker compose up -d --build"
+    chdir: "{{ xrr_base_dir }}/xrr-cleanup"
+  when: xrr_cleanup_status.stdout == ""

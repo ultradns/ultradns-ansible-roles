@@ -1,0 +1,52 @@
+---
+- name: Ensure the base directory exists
+  ansible.builtin.file:
+    path: "{{ ddns_base_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy Dockerfile
+  ansible.builtin.copy:
+    src: "Dockerfile"
+    dest: "{{ ddns_base_dir }}/Dockerfile"
+    mode: '0644'
+
+- name: Copy docker-compose.yml
+  ansible.builtin.copy:
+    src: "docker-compose.yml"
+    dest: "{{ ddns_base_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Copy entrypoint script
+  ansible.builtin.copy:
+    src: "entrypoint.sh"
+    dest: "{{ ddns_base_dir }}/entrypoint.sh"
+    mode: '0755'
+
+- name: Generate environment file from template
+  ansible.builtin.template:
+    src: "docker.env.j2"
+    dest: "{{ ddns_base_dir }}/.env"
+    mode: '0644'
+
+- name: Copy UltraDNS vault file into the directory
+  ansible.builtin.copy:
+    src: "{{ vault_file }}"
+    dest: "{{ ddns_base_dir }}/ultra_vault.yml"
+    mode: '0600'
+
+- name: Copy Ansible vault password file into the directory
+  ansible.builtin.copy:
+    src: "{{ vault_pass_file }}"
+    dest: "{{ ddns_base_dir }}/.ansible-vault-pass"
+    mode: '0600'
+
+- name: Build and start the DDNS Client container
+  ansible.builtin.command:
+    cmd: docker compose up --build -d
+    chdir: "{{ ddns_base_dir }}"
+  register: ddns_compose_output
+
+- name: Display Docker Compose output
+  ansible.builtin.debug:
+    var: ddns_compose_output.stdout_lines

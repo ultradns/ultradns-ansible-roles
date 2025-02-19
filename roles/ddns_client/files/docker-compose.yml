@@ -1,0 +1,8 @@
+---
+services:
+  ddns-updater:
+    build: .
+    container_name: ddns-updater
+    env_file:
+      - .env
+    restart: always

@@ -1,0 +1,21 @@
+---
+- name: Validate required variables
+  ansible.builtin.assert:
+    that:
+      - records is defined and records | length > 0
+      - expire_in is defined and expire_in | length > 0
+      - vault_file is defined and vault_pass_file is defined
+    fail_msg: "ERROR: Missing required variables: records, expire_in, vault_file, vault_pass_file."
+
+- name: Ensure xrr-cleanup is running
+  ansible.builtin.include_tasks: setup_xrr_cleanup.yml
+
+- name: Generate unique container ID
+  ansible.builtin.set_fact:
+    container_id: "xrr-{{ lookup('pipe', 'uuidgen') }}"
+
+- name: Include tasks to create resource records
+  ansible.builtin.include_tasks: create_xrrset.yml
+
+- name: Include tasks to handle expiration tracking
+  ansible.builtin.include_tasks: deploy_expiration_handler.yml

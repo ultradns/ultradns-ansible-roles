@@ -1,0 +1,13 @@
+galaxy_info:
+  author: Shane Barbetta
+  description: >
+    An Ansible role to set up a DDNS client using UltraDNS.
+  license: GPL-3.0-only
+  min_ansible_version: 2.9
+  galaxy_tags:
+    - ultradns
+    - dns
+    - networking
+    - devops
+
+dependencies: []

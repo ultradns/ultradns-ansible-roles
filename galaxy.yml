@@ -1,0 +1,17 @@
+namespace: ultradns
+name: dnsops
+version: "1.0.0"
+readme: README.md
+authors:
+  - Shane Barbetta
+description: >
+  A collection of Ansible roles for managing UltraDNS zones and records efficiently.
+license: GPL-3.0-only
+tags:
+  - ultradns
+  - dns
+  - networking
+  - devops
+dependencies:
+  ultradns.ultradns: ">=1.0.2"
+repository: https://github.com/ultradns/ultradns-ansible-roles

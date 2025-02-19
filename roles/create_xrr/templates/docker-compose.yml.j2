@@ -1,0 +1,10 @@
+---
+services:
+  xrr-handler:
+    container_name: "{{ container_id }}"
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - "{{ xrr_base_dir }}/{{ container_id }}/expiration_time.json:/expiration_time.json"
+    restart: "no"

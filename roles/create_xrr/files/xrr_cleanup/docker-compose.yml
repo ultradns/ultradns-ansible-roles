@@ -1,0 +1,8 @@
+---
+services:
+  xrr-cleanup:
+    build: .
+    container_name: xrr-cleanup
+    restart: always
+    volumes:
+      - "../:/xrr_records"

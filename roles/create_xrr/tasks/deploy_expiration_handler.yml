@@ -1,0 +1,71 @@
+---
+- name: Convert expire_in to future timestamp
+  ansible.builtin.command:
+    cmd: >
+      date -d "now + {{ expire_in | regex_replace('m$', ' minutes') 
+                                | regex_replace('h$', ' hours') 
+                                | regex_replace('d$', ' days') 
+                                | regex_replace('w$', ' weeks') 
+                                | regex_replace('M$', ' months') }}" +%s
+  register: expiration_timestamp
+  ignore_errors: no
+
+- name: Debug expiration timestamp
+  ansible.builtin.debug:
+    msg: "Expiration timestamp calculated: {{ expiration_timestamp.stdout }}"
+
+
+- name: Store expiration timestamp in a JSON file
+  ansible.builtin.copy:
+    content: |
+      {
+        "timestamp": {{ expiration_timestamp.stdout | trim }}
+      }
+    dest: "{{ xrr_base_dir }}/{{ container_id }}/expiration_time.json"
+    mode: '0644'
+
+- name: Generate environment file
+  ansible.builtin.template:
+    src: "docker.env.j2"
+    dest: "{{ xrr_base_dir }}/{{ container_id }}/.env"
+    mode: '0644'
+
+- name: Copy UltraDNS vault file
+  ansible.builtin.copy:
+    src: "{{ vault_file }}"
+    dest: "{{ xrr_base_dir }}/{{ container_id }}/ultra_vault.yml"
+    mode: '0600'
+
+- name: Copy Ansible vault password file
+  ansible.builtin.copy:
+    src: "{{ vault_pass_file }}"
+    dest: "{{ xrr_base_dir }}/{{ container_id }}/.ansible-vault-pass"
+    mode: '0600'
+
+- name: Copy Dockerfile
+  ansible.builtin.copy:
+    src: "Dockerfile"
+    dest: "{{ xrr_base_dir }}/{{ container_id }}/Dockerfile"
+    mode: '0644'
+
+- name: Copy docker-compose.yml template
+  ansible.builtin.template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ xrr_base_dir }}/{{ container_id }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Copy entrypoint script
+  ansible.builtin.copy:
+    src: "entrypoint.sh"
+    dest: "{{ xrr_base_dir }}/{{ container_id }}/entrypoint.sh"
+    mode: '0755'
+
+- name: Start expiring record container
+  ansible.builtin.command:
+    cmd: docker compose up --build -d
+    chdir: "{{ xrr_base_dir }}/{{ container_id }}"
+  register: container_output
+
+- name: Display container output
+  ansible.builtin.debug:
+    var: container_output.stdout_lines

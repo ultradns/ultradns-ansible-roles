@@ -1,0 +1,10 @@
+---
+- name: Create zones if create_zones is true
+  ansible.builtin.include_tasks: create_zone.yml
+  when: create_zones | default(false)
+
+- name: Ensure DNS records are set for all zones
+  ansible.builtin.include_tasks: add_record.yml
+  loop: "{{ zones }}"
+  loop_control:
+    loop_var: zone

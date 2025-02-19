@@ -1,0 +1,12 @@
+---
+- name: Validate required variables
+  ansible.builtin.assert:
+    that:
+      - vault_file is defined and vault_file | length > 0
+      - vault_pass_file is defined and vault_pass_file | length > 0
+      - zone is defined and zone | length > 0
+    fail_msg: "ERROR: Required variables are missing. You must provide vault_file, vault_pass_file, and zone."
+  when: state == "present"
+
+- name: Include the correct task based on state
+  ansible.builtin.include_tasks: "{{ state }}.yml"

@@ -1,0 +1,5 @@
+---
+ddns_base_dir: "~/ddns_client"
+host: "ddns"
+cron_expression: "* * * * *"
+state: "present"

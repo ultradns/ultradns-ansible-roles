@@ -1,0 +1,28 @@
+---
+- name: Check if the DDNS directory exists
+  ansible.builtin.stat:
+    path: "{{ ddns_base_dir }}"
+  register: ddns_dir_stat
+
+- name: Stop and remove the DDNS Client container
+  ansible.builtin.command:
+    cmd: docker compose down
+    chdir: "{{ ddns_base_dir }}"
+  when: ddns_dir_stat.stat.exists
+  ignore_errors: yes  # Ignore errors in case the container isn't running
+
+- name: Remove the corresponding DNS record
+  ultradns.ultradns.record:
+    zone: "{{ zone }}"
+    name: "{{ host }}"
+    type: A
+    state: absent
+    provider: "{{ ultra_provider }}"
+  when: zone is defined and host is defined
+  ignore_errors: yes  # Ignore errors if the record is already gone
+
+- name: Remove the DDNS Client directory
+  ansible.builtin.file:
+    path: "{{ ddns_base_dir }}"
+    state: absent
+  when: ddns_dir_stat.stat.exists

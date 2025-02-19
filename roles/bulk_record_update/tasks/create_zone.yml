@@ -1,0 +1,10 @@
+---
+- name: Create UltraDNS zones
+  ultradns.ultradns.zone:
+    name: "{{ zone }}"
+    account: "{{ account }}"
+    state: present
+    provider: "{{ ultra_provider }}"
+  loop: "{{ zones }}"
+  loop_control:
+    loop_var: zone
