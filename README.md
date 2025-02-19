@@ -1,6 +1,6 @@
 # ultradns-ansible-roles
 
-A collection of Ansible roles for managing UltraDNS zones and records efficiently. Designed for **automation, scalability, and seamless integration** into DevOps workflows.
+[A collection of Ansible roles](https://galaxy.ansible.com/ui/repo/published/ultradns/dnsops/) for managing UltraDNS zones and records efficiently. Designed for **automation, scalability, and seamless integration** into DevOps workflows.
 
 ## Dependencies
 
@@ -12,12 +12,18 @@ The only other **required** dependency is Python's `requests` module. However, i
 
 ## Setup
 
-Clone this repository, then package and install the collection.
+Pull the role directly from Ansible Galaxy:
+
+```bash
+ansible-galaxy collection install ultradns.dnsops
+```
+
+Alternatively, clone this repository, then package and install the collection.
 
 ```bash
 git clone https://github.com/ultradns/ultradns-ansible-roles
 ansible-galaxy collection build
-ansible-galaxy collection install ultradns-dnsops-1.0.0.tar.gz
+ansible-galaxy collection install ultradns-dnsops-x.x.x.tar.gz
 ```
 
 ## Usage
